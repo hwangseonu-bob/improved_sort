@@ -29,30 +29,40 @@ func loadData(filename string) []int {
 	return data
 }
 
-func main() {
+func improved(data []int) int64 {
 	t := time.Now()
-
-	data := loadData(os.Args[1])
-
-	QSort(data, 0, len(data))
-
-	for _, v := range data {
-		fmt.Printf("%d, ", v)
-	}
-	fmt.Println()
-
-	qresult := time.Now().Sub(t).Nanoseconds()
-	fmt.Printf("퀵 정렬 실행시간: %d ns\n", qresult)
-
-	t = time.Now()
-	data = loadData(os.Args[1])
-
 	ISort(data)
 
 	for _, v := range data {
-		fmt.Printf("%d, ", v)
+		fmt.Println(v)
 	}
 	fmt.Println()
 
-	fmt.Printf("수정된 정렬 실행시간: %d ns\n", time.Now().Sub(t).Nanoseconds())
+	return time.Now().Sub(t).Nanoseconds()
+}
+
+func quick(data []int) int64 {
+	t := time.Now()
+	QSort(data, 0, len(data) - 1)
+
+	for _, v := range data {
+		fmt.Println(v)
+	}
+	fmt.Println()
+
+	return time.Now().Sub(t).Nanoseconds()
+}
+
+func main() {
+	if len(os.Args) != 2 {
+		os.Exit(-1)
+	}
+
+	i := improved(loadData(os.Args[1]))
+	q := quick(loadData(os.Args[1]))
+
+	fmt.Printf("개선된 정렬 실행시간: %d microseconds \n", i / 1000)
+	fmt.Printf("퀵정렬 실행시간: %d microseconds\n", q / 1000)
+
+	fmt.Printf("개선된 시간: %d microseconds \n", (q - i) / 1000)
 }

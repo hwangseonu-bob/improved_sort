@@ -5,6 +5,9 @@ func ISort(d []int) {
 	quickSort(d, 0, n, maxDepth(n))
 }
 
+// 자료의 크기가 12이하이면 쉘정렬
+// 자료의 크기가 12보다 많을 때 Depth가 0이면 힙정렬, 아니면 퀵정렬
+// MaxDepth는 2 * ceil(log(n+1))
 func quickSort(d []int, l, r int, md int) {
 	if r-l > 12 {
 		if md == 0 {
@@ -12,9 +15,11 @@ func quickSort(d []int, l, r int, md int) {
 			return
 		}
 		md--
-		i, j := pivot(d, l, r)
-		quickSort(d, i+1, r, md)
-		quickSort(d, l, j-1, md)
+		if l < r {
+			p := pivot(d, l, r)
+			quickSort(d, l, p, md)
+			quickSort(d, p, r, md)
+		}
 	} else {
 		shellSort(d, l, r)
 	}
@@ -50,25 +55,6 @@ func insertSort(d []int, l, r int) {
 	}
 }
 
-func pivot(d []int, l, r int) (int, int) {
-	var i, j int
-	for {
-		p := d[(l+r)/2]
-
-		for i = l; d[i] < p; i++ {
-		}
-		for j = r - 1; d[j] >= p; j-- {
-		}
-
-		if i >= j {
-			break
-		}
-
-		d[i], d[j] = d[j], d[i]
-	}
-	return i, j
-}
-
 func shiftDown(d []int, r, hi int, f int) {
 	c := 2*r + 1
 	if c >= hi {
@@ -86,6 +72,20 @@ func shiftDown(d []int, r, hi int, f int) {
 	d[f+r], d[f+c] = d[f+c], d[f+r]
 	shiftDown(d, c, hi, f)
 }
+
+func pivot(d []int, l, r int) int {
+	p := l
+	i, j := l+1, p
+	for ; i < r; i++ {
+		if d[i] < d[p] {
+			j++
+			d[i], d[j] = d[j], d[i]
+		}
+	}
+	d[l], d[j] = d[j], d[l]
+	return j
+}
+
 
 // 퀵정렬을 힙정렬로 변환하기 위한 임계값 반환
 // 2*ceil(lg(n+1))
